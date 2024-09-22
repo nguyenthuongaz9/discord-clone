@@ -24,6 +24,7 @@ model Profile {
  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  lastLogin DateTime @default(now())
 }
 
 model Server {
@@ -39,6 +40,7 @@ model Server {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
 
 }
 
