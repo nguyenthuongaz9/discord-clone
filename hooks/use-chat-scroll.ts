@@ -36,7 +36,7 @@ const useChatScroll = ({
         return () => {
             topDiv?.removeEventListener("scroll", handleScroll);
         }
-    }, [shouldLoadMore, loadMore, chatRef])
+    }, [shouldLoadMore, loadMore, chatRef, hasInitialized, count])
 
     useEffect(()=> {
         const bottomDiv = bottomRef?.current;
