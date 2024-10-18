@@ -39,6 +39,7 @@ type ServerWithMemberWithProfile = Server & {
 
 
 const ServerTable = () => {
+    const [isMounted, setIsMounted] = useState(false)
     const [filtervalue, setFilterValue] = useState({
         search: "",
         created: '',
@@ -69,6 +70,9 @@ const ServerTable = () => {
         return params.toString();
     }
 
+    useEffect(()=> {
+        setIsMounted(true)
+    },[])
     useEffect(() => {
         const fetchServer = async () => {
             const query = builderQueryString(filtervalue, currentPage)
@@ -120,8 +124,13 @@ const ServerTable = () => {
 
 
 
+
+
     const handlePageChange = (page: number) => {
         setCurrentPage(page)
+    }
+    if(!isMounted){
+        return null;
     }
     return (
         <div className='w-full h-full p-4 space-y-10'>
@@ -204,6 +213,12 @@ const ServerTable = () => {
                             </TableCell>
                         </TableRow>
                     ))}
+
+
+
+                    {servers.length === 0 && <div className="flex items-center">
+                        No Item
+                    </div>}
                 </TableBody>
             </Table>
 

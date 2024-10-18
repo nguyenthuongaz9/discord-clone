@@ -14,12 +14,15 @@ import { Button } from "../ui/button"
 import { useRouter } from "next/navigation"
 import { useModal } from "@/hooks/use-modal-store"
 import FileUpload from "../file-upload"
+import toast from "react-hot-toast"
 
 
 
 const formSchema = z.object({
     name: z.string().min(1, {
         message: "Server name is required"
+    }).max(256, {
+        message: "Server name cannot exceed 256 characters"
     }),
     imageUrl: z.string().min(1, {
         message: "Server image is required"
@@ -47,6 +50,7 @@ export const CreateServerModal = () => {
         try {
             await axios.post("/api/servers", values);
             form.reset()
+            toast.success('Server created successfully')
             router.refresh()
         } catch (error) {
             console.log(error)
@@ -88,6 +92,7 @@ export const CreateServerModal = () => {
                                                     onChange={field.onChange}
                                                 />
                                             </FormControl>
+                                            <FormMessage />
                                         </FormItem>
                                     )}
                                 />

@@ -15,26 +15,29 @@ import { useRouter } from "next/navigation"
 import { useModal } from "@/hooks/use-modal-store"
 import FileUpload from "../file-upload"
 import { useEffect } from "react"
+import toast from "react-hot-toast"
 
 
 
 const formSchema = z.object({
     name: z.string().min(1, {
         message: "Server name is required"
+    }).max(256, {
+        message: "Server name cannot exceed 256 characters"
     }),
     imageUrl: z.string().min(1, {
         message: "Server image is required"
     })
 })
- 
+
 export const EditServerModal = () => {
 
-    const { isOpen , onClose, type , data} = useModal()
+    const { isOpen, onClose, type, data } = useModal()
 
     const router = useRouter()
 
     const isModalOpen = isOpen && type === "editServer";
-   
+
     const { server } = data;
     const form = useForm({
         resolver: zodResolver(formSchema),
@@ -45,30 +48,34 @@ export const EditServerModal = () => {
     })
 
 
-    useEffect(()=>{
-        if(server){
+    useEffect(() => {
+        if (server) {
             form.setValue("name", server.name)
             form.setValue("imageUrl", server.imageUrl)
         }
-    } , [server, form])
+    }, [server, form])
 
     const isLoading = form.formState.isSubmitting;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
             await axios.patch(`/api/servers/${server?.id}`, values);
             form.reset()
+            toast.success('Edited server Successfully')
             router.refresh()
+            onClose()
         } catch (error) {
             console.log(error)
+            toast.success('Edited server Fail')
+
         }
     }
-
 
 
     const handleClose = () => {
         form.reset()
         onClose()
     }
+
 
     return (
         <Dialog open={isModalOpen} onOpenChange={handleClose}>
@@ -91,7 +98,7 @@ export const EditServerModal = () => {
                                 <FormField
                                     control={form.control}
                                     name="imageUrl"
-                                    render={({field}) => (
+                                    render={({ field }) => (
                                         <FormItem>
                                             <FormControl>
                                                 <FileUpload

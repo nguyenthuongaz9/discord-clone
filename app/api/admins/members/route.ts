@@ -29,7 +29,11 @@ export async function GET(req: Request) {
     };
 
     if (search) {
-      whereConditions.name = search
+      whereConditions.profile = {
+        name: {
+          contains: search.toLowerCase()
+        }
+      }
     }
 
 

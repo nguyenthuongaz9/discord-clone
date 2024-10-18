@@ -1,4 +1,4 @@
-import { currentUser, redirectToSignIn } from "@clerk/nextjs/server"
+import { currentUser } from "@clerk/nextjs/server"
 import { db } from "./db"
 import { redirect } from "next/navigation"
 
@@ -16,11 +16,24 @@ const InitialProfile = async () => {
     const profile = await db.profile.findUnique({
         where: {
             userId: user.id
-        }
+        },
     })
 
+
+
+
+    
     if(profile){
-        return profile
+        const updateProfile = await db.profile.update({
+            where:{
+                userId: user.id
+            },
+            data: {
+                lastLogin: new Date()
+            }
+        })
+    
+        return updateProfile
     }
     
 
@@ -29,7 +42,8 @@ const InitialProfile = async () => {
             userId: user.id,
             name: `${user.firstName} ${user.lastName}`,
             imageUrl: user.imageUrl,
-            email: user.emailAddresses[0].emailAddress
+            email: user.emailAddresses[0].emailAddress,
+            lastLogin: new Date()
         }
     })
 

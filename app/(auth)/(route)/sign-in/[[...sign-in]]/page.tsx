@@ -1,5 +1,18 @@
 import { SignIn } from "@clerk/nextjs";
 
+
 export default function Page() {
-  return <SignIn afterSignOutUrl={'/'} />;
+  return <SignIn
+
+    appearance={{
+      elements: {
+        footerActionText: {
+          display: 'none',
+        },
+        footerActionLink: {
+          display: 'none',
+        },
+      },
+    }}
+  />;
 }

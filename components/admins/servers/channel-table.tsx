@@ -36,6 +36,7 @@ const ITEM_PER_PAGE = 10
 const ChannelTable = ({
     serverId
 }: ChannelTableProps) => {
+    const [isMouned, setIsMounted] = useState(false)
 
     const [filterChannel, setFilterChannel] = useState({
         serverId: serverId,
@@ -66,6 +67,9 @@ const ChannelTable = ({
     }
 
 
+    useEffect(() => {
+        setIsMounted(true)
+    }, [])
 
     useEffect(() => {
         const fetchChannel = async () => {
@@ -121,6 +125,10 @@ const ChannelTable = ({
 
     const handlePageChange = (page: number) => {
         setCurrentChannelPage(page)
+    }
+
+    if (!isMouned) {
+        return null;
     }
 
     return (
@@ -191,6 +199,10 @@ const ChannelTable = ({
 
                         </TableRow>
                     ))}
+
+
+                    {channels.length === 0 && <div className='flex items-center justify-center'>
+                        No Item</div>}
                 </TableBody>
             </Table>
 

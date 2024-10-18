@@ -6,6 +6,7 @@ import { UploadDropzone } from "@/lib/uploadthing";
 
 
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 
 interface FileUploadProps {
@@ -80,6 +81,7 @@ const FileUpload = ({
             }}
             onUploadError={(error: Error)=>{
                 console.log(error);
+                toast.error(error.message)
             }}
         />
     )

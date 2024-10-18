@@ -9,6 +9,7 @@ import { useModal } from "@/hooks/use-modal-store"
 import { Button } from "../ui/button"
 import axios from "axios"
 import { useRouter } from "next/navigation"
+import toast from "react-hot-toast"
 
 
 
@@ -32,10 +33,12 @@ export const DeleteServerModal = () => {
             setIsLoading(true);
             await axios.delete(`/api/servers/${server?.id}/delete`)
             onClose()
+            toast.success('Deleted Successfully')
             router.refresh()
             router.push("/")
         } catch (error) {
             console.log(error);
+            toast.success('Deleted Fail')
         }
     }
 

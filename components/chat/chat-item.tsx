@@ -129,13 +129,19 @@ const ChatItem = ({
 
   const isAdmin = currentMember.role === MemberRole.ADMIN;
   const isModerator = currentMember.role === MemberRole.MODERATOR;
-  const isOwner = currentMember.id === member.id
+  const isOwner = currentMember?.id === member?.id
 
   const canDeleteMesssage = !deleted && (isAdmin || isModerator || isOwner);
   const canEditMesssage = !deleted && isOwner && !fileUrl;
 
   const isPDF = fileType === "pdf" && fileUrl
   const isImage = !isPDF && fileUrl;
+
+  if(!member){
+    return <div>
+      
+    </div>;
+  }
 
   return (
     <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
@@ -144,7 +150,7 @@ const ChatItem = ({
           onClick={onMemberClick}
           className="cursor-pointer hover:drop-shadow-md transition"
         >
-          <UserAvatar src={member.profile.imageUrl} />
+          <UserAvatar src={member?.profile?.imageUrl} />
         </div>
 
         <div className="flex flex-col w-full">

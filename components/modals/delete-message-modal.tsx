@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useModal } from "@/hooks/use-modal-store"
 import { Button } from "../ui/button"
 import axios from "axios"
+import toast from "react-hot-toast"
 
 
 
@@ -35,9 +36,11 @@ export const DeleteMessageModal = () => {
                query: query
             })
             await axios.delete(url)
+            toast.success('Deleted Successfully')
             onClose()
         } catch (error) {
             console.log(error);
+            toast.success('Deleted Fail')
         }
     }
 

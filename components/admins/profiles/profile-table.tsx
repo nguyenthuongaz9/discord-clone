@@ -34,12 +34,15 @@ interface ProfileTableProps {
 const ProfileTable = ({
     profile
 }: ProfileTableProps) => {
+    const [isMounted, setIsMounted] = useState(false)
+    useEffect(()=> {
+        setIsMounted(true)
+    },[])
     const [filtervalue, setFilterValue] = useState({
         search: "",
         role: "",
         created: '',
     })
-
 
     const onChange = async (id: string, newRole: string) => {
         try {
@@ -76,10 +79,12 @@ const ProfileTable = ({
     useEffect(() => {
         const fetchProfile = async () => {
             const query = builderQueryString(filtervalue, currentPage)
-            console.log(query)
             const response = await axios.get(`/api/admins/profiles?${query}`)
-            setProfiles(response.data.data || [])
-            setTotalPages(response.data.pagination.totalPages)
+            if(response.data){
+                const existingProfiles = response.data.data.filter( (p:any) => p?.id !== profile.id)
+                setProfiles(existingProfiles || [])
+                setTotalPages(response.data.pagination.totalPages)
+            }
         }
         fetchProfile()
     }, [filtervalue.search, filtervalue.created, filtervalue.role, currentPage])
@@ -121,6 +126,10 @@ const ProfileTable = ({
         setCurrentPage(page)
     }
 
+
+    if(!isMounted){
+        return null;
+    }
     return (
         <div className='w-full h-full p-4 space-y-10'>
             <div className='w-full flex gap-4 items-center'>
@@ -187,44 +196,54 @@ const ProfileTable = ({
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {profiles.length > 0 && profiles.map((profile) => (
-                        <TableRow key={profile.id}>
-                            <TableCell>
-                                <Input
-                                    type="checkbox"
-                                    value={profile.id}
-                                    className="w-4 cursor-pointer"
-                                    checked={selectedIds.includes(profile.id)}
-                                    onChange={() => handleSelectProfile(profile.id)}
-                                />
-                            </TableCell>
-                            <TableCell>{profile.id}</TableCell>
-                            <TableCell>{profile.userId}</TableCell>
-                            <TableCell>{profile.name}</TableCell>
-                            <TableCell>
-                                <img src={profile.imageUrl} alt={profile.name} width="50" className="rounded-full" />
-                            </TableCell>
-                            <TableCell>{profile.email}</TableCell>
-                            <TableCell>
-                                <Select
-                                    value={profile.role}
-                                    onValueChange={(value) => onChange(profile.id, value)}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder={profile.role} />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectGroup>
-                                            <SelectItem value="ADMIN">ADMIN</SelectItem>
-                                            <SelectItem value="GUEST">GUEST</SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-                                </Select>
-                            </TableCell>
-                            <TableCell>{profile.createdAt.toString()}</TableCell>
-                            <TableCell>{profile.updatedAt.toString()}</TableCell>
-                        </TableRow>
-                    ))}
+                    {profiles.length > 0 && profiles.map((profile) => {
+                        
+
+                        return (
+                            <TableRow key={profile.id}>
+                                <TableCell>
+                                    <Input
+                                        type="checkbox"
+                                        value={profile.id}
+                                        className="w-4 cursor-pointer"
+                                        checked={selectedIds.includes(profile.id)}
+                                        onChange={() => handleSelectProfile(profile.id)}
+                                    />
+                                </TableCell>
+                                <TableCell>{profile.id}</TableCell>
+                                <TableCell>{profile.userId}</TableCell>
+                                <TableCell>{profile.name}</TableCell>
+                                <TableCell>
+                                    <img src={profile.imageUrl} alt={profile.name} width="50" className="rounded-full" />
+                                </TableCell>
+                                <TableCell>{profile.email}</TableCell>
+                                <TableCell>
+                                    <Select
+                                        value={profile.role}
+                                        onValueChange={(value) => onChange(profile.id, value)}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder={profile.role} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectGroup>
+                                                <SelectItem value="ADMIN">ADMIN</SelectItem>
+                                                <SelectItem value="GUEST">GUEST</SelectItem>
+                                            </SelectGroup>
+                                        </SelectContent>
+                                    </Select>
+                                </TableCell>
+                                <TableCell>{profile.createdAt.toString()}</TableCell>
+                                <TableCell>{profile.updatedAt.toString()}</TableCell>
+                            </TableRow>
+                        )
+                    })}
+
+                    {profiles.length === 0 && (
+                        <div className="flex items-center justify-center">
+                            No Item
+                        </div>
+                    )}
                 </TableBody>
             </Table>
 

@@ -19,12 +19,15 @@ import FileUpload from "../file-upload"
 import { ChannelType } from "@prisma/client"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { useEffect } from "react"
+import toast from "react-hot-toast"
 
 
 
 const formSchema = z.object({
     name: z.string().min(1, {
-        message: "Server name is required"
+        message: "Channel name is required"
+    }).max(256, {
+        message: "Channel name cannot exceed 256 characters"
     }).refine(
         name => name !== "general",
         {
@@ -32,22 +35,22 @@ const formSchema = z.object({
         }
     ),
     type: z.nativeEnum(ChannelType)
-   
+
 })
- 
+
 export const CreateChannelModal = () => {
 
-    const { isOpen , onClose, type , data} = useModal()
+    const { isOpen, onClose, type, data } = useModal()
 
     const router = useRouter()
     const params = useParams()
 
 
-    
+
 
     const isModalOpen = isOpen && type === "createChannel";
     const { channelType } = data
-   
+
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -56,18 +59,18 @@ export const CreateChannelModal = () => {
         },
     })
 
-    
-    useEffect(()=>{
-        if(channelType){
+
+    useEffect(() => {
+        if (channelType) {
             form.setValue("type", channelType)
-        }else{
-            form.setValue("type", ChannelType.TEXT)   
+        } else {
+            form.setValue("type", ChannelType.TEXT)
         }
-    },[channelType, form])
+    }, [channelType, form])
     const isLoading = form.formState.isSubmitting;
 
 
-    
+
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
             const url = qs.stringifyUrl({
@@ -79,11 +82,13 @@ export const CreateChannelModal = () => {
 
             await axios.post(url, values);
 
-
+            toast.success('Created Channel Successfully')
             form.reset()
             router.refresh()
         } catch (error) {
             console.log(error)
+            toast.success('Created Channel Fail')
+
         }
     }
 
@@ -101,7 +106,7 @@ export const CreateChannelModal = () => {
                     <DialogTitle className="text-2xl text-center font-bold">
                         Create channel
                     </DialogTitle>
-                    
+
                 </DialogHeader>
 
                 <Form {...form}>
@@ -109,7 +114,7 @@ export const CreateChannelModal = () => {
                         className="space-y-8"
                     >
                         <div className="space-y-8 px-6">
-                            
+
 
                             <FormField
                                 control={form.control}
@@ -156,7 +161,7 @@ export const CreateChannelModal = () => {
                                             </FormControl>
 
                                             <SelectContent>
-                                                {Object.values(ChannelType).map((type)=>(
+                                                {Object.values(ChannelType).map((type) => (
                                                     <SelectItem
                                                         key={type}
                                                         value={type}
@@ -167,7 +172,7 @@ export const CreateChannelModal = () => {
                                                 ))}
                                             </SelectContent>
                                         </Select>
-                                        <FormMessage/>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />

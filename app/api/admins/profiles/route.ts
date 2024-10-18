@@ -1,9 +1,7 @@
 import currentProfile from "@/lib/current-profile";
 import { db } from "@/lib/db";
-import { AdminRole, MemberRole, Profile } from "@prisma/client";
+import { AdminRole } from "@prisma/client";
 import { NextResponse } from "next/server";
-
-
 
 export async function GET(req: Request) {
   try {
@@ -20,7 +18,9 @@ export async function GET(req: Request) {
     const whereConditions: any = {};
 
     if (search) {
-      whereConditions.name = search
+      whereConditions.name = {
+        contains: search.toLowerCase(),
+      };
     }
 
     if (role) {
@@ -47,9 +47,6 @@ export async function GET(req: Request) {
 
     const totalPages = Math.ceil(totalProfiles / limit);
 
-
-    console.log(whereConditions)
-
     return NextResponse.json({
       data: profiles,
       pagination: {
@@ -60,21 +57,15 @@ export async function GET(req: Request) {
     });
 
   } catch (error) {
-    console.error("Error fetching profiles:", error); // Improved error logging
+    console.error("Error fetching profiles:", error);
     return new NextResponse('Internal server error', { status: 500 });
   }
 }
-
-
 
 export async function DELETE(req: Request) {
   try {
     const body = await req.json();
     const ids = body.ids as string[];
-
-
-    const profile = await currentProfile()
-
 
 
     if (!Array.isArray(ids) || ids.length === 0) {
@@ -112,6 +103,16 @@ export async function DELETE(req: Request) {
       },
     });
 
+    await db.message.deleteMany({
+      where:{
+        member:{
+          profileId: {
+            in: ids
+          }
+        }
+      }
+    })
+
     await db.profile.deleteMany({
       where: {
         id: {
@@ -127,5 +128,3 @@ export async function DELETE(req: Request) {
     return new NextResponse('Internal server error', { status: 500 });
   }
 }
-
-

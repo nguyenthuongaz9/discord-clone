@@ -40,6 +40,7 @@ interface MemberTableProps{
 const MemberTable = ({
     serverId,
 }:MemberTableProps) => {
+    const [isMouned, setIsMounted] = useState(false)
     const [filtervalue, setFilterValue] = useState({
         serverId: serverId,
         search: "",
@@ -70,6 +71,9 @@ const MemberTable = ({
         })
         return params.toString();
     }
+    useEffect(()=> {
+        setIsMounted(true)
+    },[])
 
     useEffect(() => {
         const fetchMembers = async () => {
@@ -125,8 +129,14 @@ const MemberTable = ({
     const handlePageChange = (page: number) => {
         setCurrentPage(page)
     }
+
+
+    if(!isMouned){
+        return null;
+    }
     return (
         <div className='w-full h-full p-4 space-y-10'>
+            <h2 className="text-zinc-400 text-xl">Member</h2>
             <div className='w-full flex gap-4 items-center'>
                 <div className="flex flex-col gap-2">
                     <label className='text-sm' >Search</label>
@@ -199,6 +209,8 @@ const MemberTable = ({
                            
                         </TableRow>
                     ))}
+
+                    { members.length === 0 && <div className="flex items-center justify-center"> No Item</div> }
                 </TableBody>
             </Table>
 

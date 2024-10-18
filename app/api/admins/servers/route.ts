@@ -22,7 +22,9 @@ export async function GET(req: Request) {
     const whereConditions: any = {};
 
     if (search) {
-      whereConditions.name = search
+      whereConditions.name = {
+        contains: search.toLowerCase(),
+      };
     }
 
 
@@ -42,11 +44,11 @@ export async function GET(req: Request) {
       where: whereConditions,
       skip: skip,
       take: limit,
-      include:{
-        members:{
-            include:{
-                profile: true
-            }
+      include: {
+        members: {
+          include: {
+            profile: true
+          }
         }
       }
     });
@@ -82,7 +84,7 @@ export async function DELETE(req: Request) {
 
     if (!Array.isArray(ids) || ids.length === 0) {
       return new NextResponse('Invalid or empty list of IDs', { status: 400 });
-    }  
+    }
     await db.server.deleteMany({
       where: {
         id: {

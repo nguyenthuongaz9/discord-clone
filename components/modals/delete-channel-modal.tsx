@@ -10,6 +10,7 @@ import { useModal } from "@/hooks/use-modal-store"
 import { Button } from "../ui/button"
 import axios from "axios"
 import { useParams, useRouter } from "next/navigation"
+import toast from "react-hot-toast"
 
 
 
@@ -39,10 +40,12 @@ export const DeleteChannelModal = () => {
                 }
             })
             await axios.delete(url)
+            toast.success('Deleted Successfully')
             onClose()
             router.refresh()
             window.location.reload()
         } catch (error) {
+            toast.success('Deleted Fail')
             console.log(error);
         }
     }

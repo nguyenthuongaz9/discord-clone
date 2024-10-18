@@ -23,7 +23,9 @@ interface ChatInputProps {
 
 
 const formSchema = z.object({
-    content: z.string().min(1)
+    content: z.string().min(1).max(1000, {
+        message: "Message cannot exceed 1000 characters"
+    })
 })
 
 const ChatInput = ({
@@ -51,9 +53,9 @@ const ChatInput = ({
             const url = qs.stringifyUrl({
                 url: apiUrl,
                 query,
-            })        
-            
-            
+            })
+
+
             await axios.post(url, values)
 
             form.reset()
@@ -68,16 +70,16 @@ const ChatInput = ({
                 <FormField
                     control={form.control}
                     name="content"
-                    render={({field}) => (
+                    render={({ field }) => (
                         <FormItem>
                             <FormControl>
                                 <div className="relative p-4 pb-6">
                                     <button
                                         type="button"
-                                        onClick={()=> onOpen("messageFile", { apiUrl, query })}
+                                        onClick={() => onOpen("messageFile", { apiUrl, query })}
                                         className="absolute top-7 left-8 h-[24px] w-[24px] bg-zinc-500 dark:bg-zinc-400 hover:bg-zinc-600 dark:hover:bg-zinc-300 transition rounded-full flex items-center justify-center"
                                     >
-                                        <Plus className="text-white dark:text-[#313338]"/>
+                                        <Plus className="text-white dark:text-[#313338]" />
                                     </button>
                                     <Input
                                         disabled={isLoading}
@@ -88,8 +90,8 @@ const ChatInput = ({
 
 
                                     <div className="absolute top-7 right-8">
-                                        <EmojiPicker 
-                                            onChange={(emoji: string)=> field.onChange(`${field.value} ${emoji}`)}
+                                        <EmojiPicker
+                                            onChange={(emoji: string) => field.onChange(`${field.value} ${emoji}`)}
                                         />
                                     </div>
 
